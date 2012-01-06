@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import random
-import re
 import math
 import argparse
 
@@ -9,7 +8,72 @@ DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
 
-BAD_CHARS= "|".join(BAD_CH_LIST)
+class DictionaryList(object):
+    def __init__(self, flags):
+        self._dictList = []
+        self._dictLen = 0
+        self._skipBad = flags.x
+        self._maxLen = flags.l
+        self._badChars = BAD_CH_LIST
+        self._loadDict(DEFAULT_DICT)
+
+    def getWord(self, num):
+        return self._dictList[num]
+
+    def __len__(self):
+        return self._dictLen
+
+    def _loadDict(self, path):
+        self._dictList = []
+        dict_file = file(path)
+        for line in dict_file:
+            word = line.strip()
+            if self._validateWord(word):
+                self._dictList.append(word)
+        self._dictLen = len(self._dictList)
+
+    def _validateWord(self, word):
+        if len(word) > self._maxLen or len(word) == 0:
+            return False
+        if self._skipBad and self._hasBadChar(word):
+            return False
+        return True
+
+    def _hasBadChar(self, word):
+        for char in word:
+            if char in self._badChars:
+                return True
+
+class RandomDict(DictionaryList):
+    def __init__(self, flags):
+        super(RandomDict, self).__init__(flags)
+        self._rng = random.SystemRandom()
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.getWord(self._rng.randint(0, self._dictLen-1))
+
+class PasswordGen(object):
+    def __init__(self, flags):
+        self._randSource = RandomDict(flags)
+        self._wordCount = flags.w
+        self._delimiter = flags.s
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        word_list = [self._randSource.next() for i in range(self._wordCount)]
+        return self._delimiter.join(word_list)
+
+    def getInfo(self):
+        entropy = math.log(len(self._randSource) ** self._wordCount, 2)
+        info =  "\nInfo:\n"
+        info += "  Entropy: %d\n" % entropy
+        info += "  Entropy per word: %d" % (entropy / self._wordCount)
+        return info
 
 def createParser():
     parser = argparse.ArgumentParser(
@@ -41,30 +105,14 @@ def createParser():
             help="The maximum word length. Words must be at or below this length.")
     return parser
 
-def loadDict(dict_file, exclude_char, max_word_len):
-    dict_list = []
-    for line in dict_file:
-        word = line.strip()
-        if validateWord(word, max_word_len, exclude_char):
-            dict_list.append(word)
-    return dict_list
-
-def validateWord(word, max_word_len, exclude_char):
-    return (len(word) <= max_word_len) and not (exclude_char and re.search(BAD_CHARS, word))
-
-def makePassword(dict_list, word_count, delimit):
-    dict_len = len(dict_list)
-    r = random.SystemRandom()
-    pass_list = []
-    for i in range(word_count):
-        pass_list.append( dict_list[r.randint(0,dict_len-1)] )
-    return delimit.join(pass_list)
-
-def getPassInfo(dict_len, word_count):
-    entropy = math.log(dict_len ** word_count, 2)
-    return "\nInfo:\n  Entropy: %d\n  Entropy per word: %d" % (entropy, (entropy/word_count))
-
 if __name__ == "__main__":
+    parser = createParser()
+    flags = parser.parse_args()
+    pGen = PasswordGen(flags)
+    print pGen.next()
+    print pGen.getInfo()
+    exit()
+
     # Parse arguments
     parser = createParser()
     args = vars( parser.parse_args() )
@@ -75,11 +123,3 @@ if __name__ == "__main__":
     delimit = args['s']
     max_word_len = args['l']
 
-    #Read in dictionary
-    dict_list = loadDict(dict_file, exclude_chars, max_word_len)
-
-    # Select random words and create password
-    print makePassword(dict_list, word_count, delimit)
-
-    if info:
-        print getPassInfo(len(dict_list), word_count)
