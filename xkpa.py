@@ -15,7 +15,7 @@ class DictionaryList(object):
         self._skipBad = flags.x
         self._maxLen = flags.l
         self._badChars = BAD_CH_LIST
-        self._loadDict(DEFAULT_DICT)
+        self._loadDict(flags.d)
 
     def getWord(self, num):
         return self._dictList[num]
@@ -85,7 +85,6 @@ def createParser():
             nargs='?',
             help="The number of words in the password. Defaults to 4.")
     parser.add_argument('-d',
-            type=open,
             default=DEFAULT_DICT,
             help="The dictionary file. Defaults to /usr/share/dict/words.")
     parser.add_argument('-x',
@@ -110,16 +109,5 @@ if __name__ == "__main__":
     flags = parser.parse_args()
     pGen = PasswordGen(flags)
     print pGen.next()
-    print pGen.getInfo()
-    exit()
-
-    # Parse arguments
-    parser = createParser()
-    args = vars( parser.parse_args() )
-    word_count = args['w']
-    dict_file = args['d']
-    exclude_chars = args['x']
-    info = args['i']
-    delimit = args['s']
-    max_word_len = args['l']
-
+    if flags.i:
+        print pGen.getInfo()
