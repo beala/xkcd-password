@@ -19,11 +19,11 @@ def createParser():
             type=int,
             default=WORDS,
             nargs='?',
-            help="The number of words to generate.")
+            help="The number of words in the password. Defaults to 4.")
     parser.add_argument('-d',
             type=open,
             default=DEFAULT_DICT,
-            help="The dictionary file.")
+            help="The dictionary file. Defaults to /usr/share/dict/words.")
     parser.add_argument('-x',
             action='store_false',
             default=True,
@@ -34,7 +34,7 @@ def createParser():
             help="Enable showing password information (entropy, etc).")
     parser.add_argument('-s',
             default='-',
-            help="Delimit words with a given character.")
+            help="Delimit words with a given character/string.")
     parser.add_argument('-l',
             default=100,
             type=int,
