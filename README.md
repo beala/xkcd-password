@@ -23,3 +23,11 @@ optional arguments:
 
 http://xkcd.com/936/
 ```
+
+###Dictionary File###
+The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. I strikes a nice balance between entropy and not having too many esoteric words.
+ 
+Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
+
+###Randomness###
+This script uses the `random.SystemRandom()` method. This should provide cryptographically secure randomness.

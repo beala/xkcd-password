@@ -3,8 +3,14 @@
 import random
 import math
 import argparse
+import os
+import sys
 
-DEFAULT_DICT="/usr/share/dict/words"
+# The dictionary bundled with the script. It must be in the same
+# dir as the script.
+DEFAULT_DICT= os.path.dirname(sys.argv[0]) + "/dict"
+# Uncomment to use the system dictionary as the default.
+#DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
 
@@ -86,7 +92,7 @@ def createParser():
             help="The number of words in the password. Defaults to 4.")
     parser.add_argument('-d',
             default=DEFAULT_DICT,
-            help="The dictionary file. Defaults to /usr/share/dict/words.")
+            help="The dictionary file. Defaults to %s." % DEFAULT_DICT)
     parser.add_argument('-x',
             action='store_false',
             default=True,
