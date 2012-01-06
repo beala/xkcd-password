@@ -15,7 +15,7 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
-  -d D        The dictionary file. Defaults to /usr/share/dict/words.
+  -d D        The dictionary file. Defaults to ./dict.
   -x          Disable excluding special characters and punctuation.
   -i          Enable showing password information (entropy, etc).
   -s S        Delimit words with a given character/string.
