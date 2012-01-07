@@ -41,8 +41,8 @@ class DictionaryList(Dictionary):
     def __init__(self, flags):
         super(DictionaryList, self).__init__(flags)
 
-    def getWord(self, num):
-        return self._dictList[num]
+    def __getitem__(self, key):
+        return self._dictList[key]
 
     def _loadDict(self, path):
         self._dictList = []
@@ -53,16 +53,22 @@ class DictionaryList(Dictionary):
                 self._dictList.append(word)
         self._dictLen = len(self._dictList)
 
-class RandomDict(DictionaryList):
+class RandomDict(object):
     def __init__(self, flags):
-        super(RandomDict, self).__init__(flags)
+        self._dictObj = DictionaryList(flags)
         self._rng = random.SystemRandom()
 
     def __iter__(self):
         return self
 
+    def __len__(self):
+        return len(self._dictObj)
+
     def next(self):
-        return self.getWord(self._rng.randint(0, self._dictLen-1))
+        return self._dictObj[self._rng.randint(0, len(self) - 1)]
+
+    def __getattr__(self, attr):
+        return getattr(self._dictObj, attr)
 
 class PasswordGen(object):
     def __init__(self, flags):
