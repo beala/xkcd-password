@@ -14,29 +14,16 @@ DEFAULT_DICT= os.path.dirname(sys.argv[0]) + "/dict"
 WORDS = 4
 BAD_CH_LIST = ['\'']
 
-class DictionaryList(object):
+class Dictionary(object):
     def __init__(self, flags):
-        self._dictList = []
         self._dictLen = 0
         self._skipBad = flags.x
         self._maxLen = flags.l
         self._badChars = BAD_CH_LIST
         self._loadDict(flags.d)
 
-    def getWord(self, num):
-        return self._dictList[num]
-
     def __len__(self):
         return self._dictLen
-
-    def _loadDict(self, path):
-        self._dictList = []
-        dict_file = file(path)
-        for line in dict_file:
-            word = line.strip()
-            if self._validateWord(word):
-                self._dictList.append(word)
-        self._dictLen = len(self._dictList)
 
     def _validateWord(self, word):
         if len(word) > self._maxLen or len(word) == 0:
@@ -49,6 +36,22 @@ class DictionaryList(object):
         for char in word:
             if char in self._badChars:
                 return True
+
+class DictionaryList(Dictionary):
+    def __init__(self, flags):
+        super(DictionaryList, self).__init__(flags)
+
+    def getWord(self, num):
+        return self._dictList[num]
+
+    def _loadDict(self, path):
+        self._dictList = []
+        dict_file = file(path)
+        for line in dict_file:
+            word = line.strip()
+            if self._validateWord(word):
+                self._dictList.append(word)
+        self._dictLen = len(self._dictList)
 
 class RandomDict(DictionaryList):
     def __init__(self, flags):
