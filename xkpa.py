@@ -37,6 +37,28 @@ class Dictionary(object):
             if char in self._badChars:
                 return True
 
+class DictionarySplitline(Dictionary):
+    def __init__(self, flags):
+        super(DictionarySplitline, self).__init__(flags)
+
+    def __getitem__(self, key):
+        return self._dictList[key]
+
+    def _loadDict(self, path):
+        self._dictList = []
+        dict_file = file(path)
+        # Load the dictionary into memory.
+        self._dictList = dict_file.read().splitlines()
+        # Convert the dictList to a dictionary for quick searching
+        dict_dict = dict(enumerate(self._dictList))
+        for key, word in dict_dict.items():
+            # Remove invalid words
+            if not self._validateWord(word):
+                del dict_dict[key]
+        # Copy the words back into the dictList
+        self._dictList = dict_dict.values()
+        self._dictLen = len(self._dictList)
+
 class DictionaryList(Dictionary):
     def __init__(self, flags):
         super(DictionaryList, self).__init__(flags)
@@ -55,7 +77,8 @@ class DictionaryList(Dictionary):
 
 class RandomDict(object):
     def __init__(self, flags):
-        self._dictObj = DictionaryList(flags)
+        #self._dictObj = DictionaryList(flags)
+        self._dictObj = DictionarySplitline(flags)
         self._rng = random.SystemRandom()
 
     def __iter__(self):
