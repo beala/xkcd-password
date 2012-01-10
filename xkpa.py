@@ -70,9 +70,46 @@ class RandomDict(object):
     def __getattr__(self, attr):
         return getattr(self._dictObj, attr)
 
+class RandomDictExpo(Dictionary):
+    def __init__(self, flags):
+        self._rng = random.SystemRandom()
+        self._words = flags.w
+        self._curItem = -1
+        super(RandomDictExpo, self).__init__(flags)
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return self.origDictLen
+
+    def _loadDict(self, path):
+        dict_file = file(path)
+        self._dictList = []
+        self._origDictLen = 0
+        for line in dict_file:
+            self._origDictLen += 1
+            word = line.strip()
+            if self._rng.randint(0,1000) == 0 and self._validateWord(word):
+                self._dictList.append(word)
+
+        counter = 0
+        iter = 0
+        while len(self._dictList) > self._words:
+            if self._rng.randint(0,1) == 0:
+                del self._dictList[counter]
+            counter += 1
+            iter += 1
+            counter %= len(self._dictList)
+        print iter
+
+    def next(self):
+        self._curItem += 1
+        return self._dictList[self._curItem]
+
 class PasswordGen(object):
     def __init__(self, flags):
-        self._randSource = RandomDict(flags)
+        self._randSource = RandomDictExpo(flags)
         self._wordCount = flags.w
         self._delimiter = flags.s
 
