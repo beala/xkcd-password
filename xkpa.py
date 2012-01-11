@@ -20,7 +20,6 @@ class Dictionary(object):
         self._skipBad = flags.x
         self._maxLen = flags.l
         self._badChars = BAD_CH_LIST
-        self._loadDict(flags.d)
 
     def __len__(self):
         return self._dictLen
@@ -40,6 +39,7 @@ class Dictionary(object):
 class DictionaryList(Dictionary):
     def __init__(self, flags):
         super(DictionaryList, self).__init__(flags)
+        self._loadDict(flags.d)
 
     def __getitem__(self, key):
         return self._dictList[key]
@@ -70,9 +70,71 @@ class RandomDict(object):
     def __getattr__(self, attr):
         return getattr(self._dictObj, attr)
 
+class RandomDictDice(Dictionary):
+    def __init__(self, flags):
+        super(RandomDictDice, self).__init__(flags)
+        self._wordCount = flags.w
+        self._rng = random.SystemRandom()
+        self._range = 50000
+        self._dictLen = 0
+        self._loadDict(flags.d)
+
+    def _loadDict(self, path):
+        value_word_dict = {}
+        dict_file = file(path)
+        for line in dict_file:
+            word = line.strip()
+            # If word isn't valid, skip to next word
+            if not self._validateWord(word):
+                continue
+            self._dictLen += 1
+            word_value = self._rng.randint(0, self._range)
+            if word_value in value_word_dict:
+                value_word_dict[word_value].append(word)
+            else:
+                value_word_dict[word_value] = [word]
+            value_word_dict = self._trim(value_word_dict)
+        self._valWordList = value_word_dict.items()
+        self._valWordList.sort()
+
+    def _trim(self, val_word_dict):
+        # Turn the dict into a list of tuples, and sort by the
+        # first element in the tuple.
+        word_list = val_word_dict.items()
+        word_list.sort()
+        cur_word_count = 0
+        cur_entry = 0
+        for val_word in word_list:
+            cur_word_count += len( val_word[1] )
+            cur_entry += 1
+            if cur_word_count >= self._wordCount:
+                break
+        remove_count = len(word_list) - cur_entry
+        if remove_count > 0:
+            for i in range(0, remove_count):
+                word_list.pop()
+        return dict(word_list)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if len(self._valWordList[0][1]) == 0:
+            del self._valWordList[0]
+        rand_index = self._rng.randint(0, len(self._valWordList[0][1])-1 )
+        rand_word = self._valWordList[0][1][rand_index]
+        del self._valWordList[0][1][rand_index]
+        return rand_word
+
+    def __len__(self):
+        return self._dictLen
+
 class PasswordGen(object):
     def __init__(self, flags):
-        self._randSource = RandomDict(flags)
+        if flags.m:
+            self._randSource = RandomDictDice(flags)
+        else:
+            self._randSource = RandomDict(flags)
         self._wordCount = flags.w
         self._delimiter = flags.s
 
@@ -86,8 +148,8 @@ class PasswordGen(object):
     def getInfo(self):
         entropy = math.log(len(self._randSource) ** self._wordCount, 2)
         info =  "\nInfo:\n"
-        info += "  Entropy: %d\n" % entropy
-        info += "  Entropy per word: %d" % (entropy / self._wordCount)
+        info += "  Entropy: %f bits\n" % entropy
+        info += "  Entropy per word: %f bits" % (entropy / self._wordCount)
         return info
 
 def createParser():
@@ -117,6 +179,10 @@ def createParser():
             default=100,
             type=int,
             help="The maximum word length. Words must be at or below this length.")
+    parser.add_argument('-m',
+            action='store_true',
+            default=False,
+            help="Enable the low memory algorithm.")
     return parser
 
 if __name__ == "__main__":
