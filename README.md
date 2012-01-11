@@ -6,7 +6,8 @@ This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
 ```
 % ./xkpa.py -h
-usage: xkpa.py [-h] [-d D] [-x] [-i] [-s S] [-l L] [w]
+beala$ ./xkpa.py -h
+usage: xkpa.py [-h] [-d D] [-x] [-i] [-s S] [-l L] [-m] [w]
 
 Generate an xkcd style password.
 
@@ -20,6 +21,7 @@ optional arguments:
   -i          Enable showing password information (entropy, etc).
   -s S        Delimit words with a given character/string.
   -l L        The maximum word length. Words must be at or below this length.
+  -m          Enable the low memory algorithm.
 
 http://xkcd.com/936/
 ```
