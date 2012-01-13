@@ -11,7 +11,7 @@ import heapq
 # dir as the script.
 DEFAULT_DICT= os.path.dirname(sys.argv[0]) + "/dict"
 # Uncomment to use the system dictionary as the default.
-DEFAULT_DICT="/usr/share/dict/words"
+#DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
 
