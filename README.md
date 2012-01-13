@@ -1,8 +1,8 @@
-###Introduction###
+##Introduction##
 
 This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
-###Usage###
+##Usage##
 
 ```
 % ./xkpa.py -h
@@ -26,7 +26,7 @@ optional arguments:
 http://xkcd.com/936/
 ```
 
-###Examples###
+##Examples##
 **Generate a password, and put it in the clipboard (OS X)**
 
 	./xkpa.py | pbcopy
@@ -55,15 +55,15 @@ http://xkcd.com/936/
 	./xkpa.py -mxs '' 10
 	owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
 
-###Dictionary File###
+##Dictionary File##
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. I strikes a nice balance between entropy and not having too many esoteric words.
  
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
-###Randomness###
+##Randomness##
 This script uses the `random.SystemRandom()` method. This should provide cryptographically secure randomness.
 
-###Low Memory Algorithm###
+##Low Memory Algorithm##
 [This](http://blog.usrsb.in/blog/2012/01/11/picking-random-items-from-a-file/) is the low memory algorithm.
 
 	1. Read a word from the dictionary.
