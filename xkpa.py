@@ -1,10 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/python -O
 
 import random
 import math
 import argparse
 import os
 import sys
+import heapq
 
 # The dictionary bundled with the script. It must be in the same
 # dir as the script.
@@ -70,61 +71,53 @@ class RandomDict(object):
     def __getattr__(self, attr):
         return getattr(self._dictObj, attr)
 
-class RandomDictDice(Dictionary):
+class RandomDictLowMem(Dictionary):
     def __init__(self, flags):
-        super(RandomDictDice, self).__init__(flags)
+        super(RandomDictLowMem, self).__init__(flags)
         self._wordCount = flags.w
         self._rng = random.SystemRandom()
         self._range = 50000
         self._dictLen = 0
+        self._dictList = []
         self._loadDict(flags.d)
 
     def _loadDict(self, path):
-        value_word_dict = {}
-        dict_file = file(path)
+        word_q=[]
+        self._dictLen = 0
+        dict_file = open(path)
+        # Load the first n items into the word queue.
+        count = 0
+        while count < self._wordCount:
+            line = dict_file.next()
+            word = line.strip()
+            if self._validateWord(word):
+                heapq.heappush(word_q, word)
+                count += 1
+                self._dictLen += 1
+
+        # Iterate through the entire dictionary, giving each word a
+        # random value, then pushing and popping from the queue. At
+        # the end, the queue will have n words with the highest random
+        # values.
         for line in dict_file:
             word = line.strip()
-            # If word isn't valid, skip to next word
-            if not self._validateWord(word):
-                continue
-            self._dictLen += 1
-            word_value = self._rng.randint(0, self._range)
-            if word_value in value_word_dict:
-                value_word_dict[word_value].append(word)
-            else:
-                value_word_dict[word_value] = [word]
-            value_word_dict = self._trim(value_word_dict)
-        self._valWordList = value_word_dict.items()
-        self._valWordList.sort()
+            if self._validateWord(word):
+                rand_val = self._rng.random()
+                heapq.heappushpop(word_q, (rand_val, word))
+                self._dictLen += 1
 
-    def _trim(self, val_word_dict):
-        # Turn the dict into a list of tuples, and sort by the
-        # first element in the tuple.
-        word_list = val_word_dict.items()
-        word_list.sort()
-        cur_word_count = 0
-        cur_entry = 0
-        for val_word in word_list:
-            cur_word_count += len( val_word[1] )
-            cur_entry += 1
-            if cur_word_count >= self._wordCount:
-                break
-        remove_count = len(word_list) - cur_entry
-        if remove_count > 0:
-            for i in range(0, remove_count):
-                word_list.pop()
-        return dict(word_list)
+        # Put the queued items in a list, and strip them of their
+        # random values.
+        self._dictList = []
+        val_word_list = heapq.nlargest(self._wordCount, word_q)
+        for rand_val, word in val_word_list:
+            self._dictList.append(word)
 
     def __iter__(self):
-        return self
-
-    def next(self):
-        if len(self._valWordList[0][1]) == 0:
-            del self._valWordList[0]
-        rand_index = self._rng.randint(0, len(self._valWordList[0][1])-1 )
-        rand_word = self._valWordList[0][1][rand_index]
-        del self._valWordList[0][1][rand_index]
-        return rand_word
+        cur_word = 0
+        for word in self._dictList:
+            yield word
+        raise StopIteration
 
     def __len__(self):
         return self._dictLen
@@ -132,7 +125,7 @@ class RandomDictDice(Dictionary):
 class PasswordGen(object):
     def __init__(self, flags):
         if flags.m:
-            self._randSource = RandomDictDice(flags)
+            self._randSource = RandomDictLowMem(flags)
         else:
             self._randSource = RandomDict(flags)
         self._wordCount = flags.w
@@ -142,7 +135,8 @@ class PasswordGen(object):
         return self
 
     def next(self):
-        word_list = [self._randSource.next() for i in range(self._wordCount)]
+        rand_source_iter = iter(self._randSource)
+        word_list = [rand_source_iter.next() for i in range(self._wordCount)]
         return self._delimiter.join(word_list)
 
     def getInfo(self):
