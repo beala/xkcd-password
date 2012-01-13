@@ -11,21 +11,17 @@ import heapq
 # dir as the script.
 DEFAULT_DICT= os.path.dirname(sys.argv[0]) + "/dict"
 # Uncomment to use the system dictionary as the default.
-#DEFAULT_DICT="/usr/share/dict/words"
+DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
 
-class Dictionary(object):
+class WordValidator(object):
     def __init__(self, flags):
-        self._dictLen = 0
-        self._skipBad = flags.x
-        self._maxLen = flags.l
         self._badChars = BAD_CH_LIST
+        self._maxLen = flags.l
+        self._skipBad = flags.x
 
-    def __len__(self):
-        return self._dictLen
-
-    def _validateWord(self, word):
+    def isValidWord(self, word):
         if len(word) > self._maxLen or len(word) == 0:
             return False
         if self._skipBad and self._hasBadChar(word):
@@ -37,6 +33,11 @@ class Dictionary(object):
             if char in self._badChars:
                 return True
 
+class Dictionary(object):
+    def __init__(self, flags):
+        self._dictLen = 0
+        self._wordValidator = WordValidator(flags)
+
 class DictionaryList(Dictionary):
     def __init__(self, flags):
         super(DictionaryList, self).__init__(flags)
@@ -45,12 +46,15 @@ class DictionaryList(Dictionary):
     def __getitem__(self, key):
         return self._dictList[key]
 
+    def __len__(self):
+        return self._dictLen
+
     def _loadDict(self, path):
         self._dictList = []
         dict_file = file(path)
         for line in dict_file:
             word = line.strip()
-            if self._validateWord(word):
+            if self._wordValidator.isValidWord(word):
                 self._dictList.append(word)
         self._dictLen = len(self._dictList)
 
@@ -76,10 +80,12 @@ class RandomDictLowMem(Dictionary):
         super(RandomDictLowMem, self).__init__(flags)
         self._wordCount = flags.w
         self._rng = random.SystemRandom()
-        self._range = 50000
         self._dictLen = 0
         self._dictList = []
         self._loadDict(flags.d)
+
+    def _makeValWordTuple(self, word):
+        return (self._rng.random(), word)
 
     def _loadDict(self, path):
         word_q=[]
@@ -90,8 +96,9 @@ class RandomDictLowMem(Dictionary):
         while count < self._wordCount:
             line = dict_file.next()
             word = line.strip()
-            if self._validateWord(word):
-                heapq.heappush(word_q, word)
+            if self._wordValidator.isValidWord(word):
+                val_word = self._makeValWordTuple(word)
+                heapq.heappush(word_q, val_word)
                 count += 1
                 self._dictLen += 1
 
@@ -101,9 +108,9 @@ class RandomDictLowMem(Dictionary):
         # values.
         for line in dict_file:
             word = line.strip()
-            if self._validateWord(word):
-                rand_val = self._rng.random()
-                heapq.heappushpop(word_q, (rand_val, word))
+            if self._wordValidator.isValidWord(word):
+                val_word = self._makeValWordTuple(word)
+                heapq.heappushpop(word_q, val_word)
                 self._dictLen += 1
 
         # Put the queued items in a list, and strip them of their
