@@ -26,6 +26,35 @@ optional arguments:
 http://xkcd.com/936/
 ```
 
+###Examples###
+**Generate a password, and put it in the clipboard (OS X)**
+
+	./xkpa.py | pbcopy
+
+**Generate a password with info**
+
+	./xkpa.py -i
+	platter-presented-neighbor-vocational
+
+	Info:
+  		Entropy: 61.291656 bits
+  		Entropy per word: 15.322914 bits
+
+**Generate a password with 5 words separated by '.'**
+ 
+	./xkpa.py -s '.' 5
+	belies.annoyingly.birthing.ventilate.icon
+	
+**Generate a password with words no longer than 5 characters in length**
+
+	./xkpa.py -l 5
+	cover-kings-yard-store
+
+**Generate a password on a low memory machine with 10 words, separated by nothing, and include words with special characters**
+
+	./xkpa.py -mxs '' 10
+	owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
+
 ###Dictionary File###
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. I strikes a nice balance between entropy and not having too many esoteric words.
  
@@ -33,3 +62,12 @@ Modify the `DEFAULT_DICT` variable at the top of the script to use a different d
 
 ###Randomness###
 This script uses the `random.SystemRandom()` method. This should provide cryptographically secure randomness.
+
+###Low Memory Algorithm###
+[This](http://blog.usrsb.in/blog/2012/01/11/picking-random-items-from-a-file/) is the low memory algorithm.
+
+	1. Read a word from the dictionary.
+	2. Give it a random value.
+	3. Insert the value-word pair (as a tuple) into the priority queue.
+	4. If the queue has more than n items, pop an item.
+	5. Repeat until every word has been read.
