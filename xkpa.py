@@ -131,12 +131,10 @@ class RandomDictLowMem(Dictionary):
 
 class PasswordGen(object):
     def __init__(self, flags):
-        if flags.m:
-            self._randSource = RandomDictLowMem(flags)
-        else:
-            self._randSource = RandomDict(flags)
+        self._randSource = RandomDictLowMem(flags) if flags.m else RandomDict(flags)
         self._wordCount = flags.w
         self._delimiter = flags.s
+        self._noNewline = flags.n
 
     def __iter__(self):
         return self
@@ -144,7 +142,7 @@ class PasswordGen(object):
     def next(self):
         rand_source_iter = iter(self._randSource)
         word_list = [rand_source_iter.next() for i in range(self._wordCount)]
-        return self._delimiter.join(word_list)
+        return self._delimiter.join(word_list) + ("" if self._noNewline else "\n")
 
     def getInfo(self):
         entropy = math.log(len(self._randSource) ** self._wordCount, 2)
@@ -162,6 +160,11 @@ def createParser():
             default=WORDS,
             nargs='?',
             help="The number of words in the password. Defaults to 4.")
+    parser.add_argument('-n',
+            action='store_true',
+            default=False,
+            help="Disable printing a newline at the end of the password.\
+                  Good for piping to the clipboard.")
     parser.add_argument('-d',
             default=DEFAULT_DICT,
             help="The dictionary file. Defaults to %s." % DEFAULT_DICT)
@@ -190,6 +193,7 @@ if __name__ == "__main__":
     parser = createParser()
     flags = parser.parse_args()
     pGen = PasswordGen(flags)
-    print pGen.next()
+    # Print the password without adding a \n or space.
+    sys.stdout.write(pGen.next())
     if flags.i:
         print pGen.getInfo()

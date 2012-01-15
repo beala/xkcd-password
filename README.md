@@ -6,8 +6,7 @@ This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
 ```
 % ./xkpa.py -h
-beala$ ./xkpa.py -h
-usage: xkpa.py [-h] [-d D] [-x] [-i] [-s S] [-l L] [-m] [w]
+usage: xkpa.py [-h] [-n] [-d D] [-x] [-i] [-s S] [-l L] [-m] [w]
 
 Generate an xkcd style password.
 
@@ -16,6 +15,8 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+  -n          Disable printing a newline at the end of the password. Good for
+              piping to the clipboard.
   -d D        The dictionary file. Defaults to ./dict.
   -x          Disable excluding special characters and punctuation.
   -i          Enable showing password information (entropy, etc).
@@ -29,7 +30,7 @@ http://xkcd.com/936/
 ##Examples##
 **Generate a password, and put it in the clipboard (OS X)**
 
-	./xkpa.py | pbcopy
+	./xkpa.py -n | pbcopy
 
 **Generate a password with info**
 
