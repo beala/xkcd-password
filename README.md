@@ -3,9 +3,11 @@
 This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
 ##Install##
-You can clone the whole repo, but all that's needed is the `xkpa.py` and `dict` file (or you can use your system dict). You can make the script executable:
+You can clone the whole repo, but all that's needed is the `xkpa.py` and `dict` file. Put them in the same directory or change the default dictionary path (see instructions below).
+To run, you can make the script executable:
 
 	chmod +x xkpa.py
+	./xkpa.py
 
 Or you can run the script through the Python interpreter:
 
@@ -49,7 +51,7 @@ http://xkcd.com/936/
 		Entropy: 61.291656 bits
 		Entropy per word: 15.322914 bits
 
-The info is printed to stderr, so it doesn't get piped to the clipboard.
+The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
 
 **Generate a password with info**
 
