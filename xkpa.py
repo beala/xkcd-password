@@ -37,6 +37,17 @@ class Dictionary(object):
     def __init__(self, flags):
         self._dictLen = 0
         self._wordValidator = WordValidator(flags)
+        self.dict_path = flags.d
+
+    def _openDict(self):
+        try:
+            dict_file = open(self.dict_path)
+        except IOError as (num, e):
+            error_msg =  "There was a problem opening the dictionary file '%s': " % self.dict_path
+            error_msg += str(e) + "\n"
+            sys.stderr.write(error_msg)
+            exit(1)
+        return dict_file
 
 class DictionaryList(Dictionary):
     def __init__(self, flags):
@@ -51,7 +62,7 @@ class DictionaryList(Dictionary):
 
     def _loadDict(self, path):
         self._dictList = []
-        dict_file = open(path)
+        dict_file = self._openDict()
         for line in dict_file:
             word = line.strip()
             if self._wordValidator.isValidWord(word):
@@ -91,7 +102,7 @@ class RandomDictLowMem(Dictionary):
     def _loadDict(self, path):
         word_q=[]
         self._dictLen = 0
-        dict_file = open(path)
+        dict_file = self._openDict()
         # Load the first n items into the word queue.
         count = 0
         while count < self._wordCount:
