@@ -2,6 +2,15 @@
 
 This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
+##Install##
+You can clone the whole repo, but all that's needed is the `xkpa.py` and `dict` file (or you can use your system dict). You can make the script executable:
+
+	chmod +x xkpa.py
+
+Or you can run the script through the Python interpreter:
+
+	python xkpa.py
+
 ##Usage##
 
 ```
@@ -32,14 +41,24 @@ http://xkcd.com/936/
 
 	./xkpa.py -n | pbcopy
 
+**Generate a password, copy to clipboard, and print info**
+
+	./xkpa.py -ni | pbcopy
+	
+	Info:
+		Entropy: 61.291656 bits
+		Entropy per word: 15.322914 bits
+
+The info is printed to stderr, so it doesn't get piped to the clipboard.
+
 **Generate a password with info**
 
 	./xkpa.py -i
 	platter-presented-neighbor-vocational
 
 	Info:
-  		Entropy: 61.291656 bits
-  		Entropy per word: 15.322914 bits
+		Entropy: 61.291656 bits
+		Entropy per word: 15.322914 bits
 
 **Generate a password with 5 words separated by '.'**
  
