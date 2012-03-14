@@ -51,12 +51,13 @@ class DictionaryList(Dictionary):
 
     def _loadDict(self, path):
         self._dictList = []
-        dict_file = file(path)
+        dict_file = open(path)
         for line in dict_file:
             word = line.strip()
             if self._wordValidator.isValidWord(word):
                 self._dictList.append(word)
         self._dictLen = len(self._dictList)
+        dict_file.close()
 
 class RandomDict(object):
     def __init__(self, flags):
@@ -112,6 +113,8 @@ class RandomDictLowMem(Dictionary):
                 val_word = self._makeValWordTuple(word)
                 heapq.heappushpop(word_q, val_word)
                 self._dictLen += 1
+
+        dict_file.close()
 
         # Put the queued items in a list, and strip them of their
         # random values.
