@@ -148,7 +148,7 @@ class PasswordGen(object):
         entropy = math.log(len(self._randSource) ** self._wordCount, 2)
         info =  "\nInfo:\n"
         info += "  Entropy: %f bits\n" % entropy
-        info += "  Entropy per word: %f bits" % (entropy / self._wordCount)
+        info += "  Entropy per word: %f bits\n" % (entropy / self._wordCount)
         return info
 
 def createParser():
@@ -195,5 +195,7 @@ if __name__ == "__main__":
     pGen = PasswordGen(flags)
     # Print the password without adding a \n or space.
     sys.stdout.write(pGen.next())
+    # Make sure the password gets printed before info.
+    sys.stdout.flush()
     if flags.i:
-        print pGen.getInfo()
+        sys.stderr.write(pGen.getInfo())
