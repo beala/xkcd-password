@@ -6,6 +6,7 @@ import argparse
 import os
 import sys
 import heapq
+from urllib import urlopen
 
 # The dictionary bundled with the script. It must be in the same
 # dir as the script.
@@ -14,6 +15,10 @@ DEFAULT_DICT= os.path.dirname(sys.argv[0]) + "/dict"
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
+
+VERSION = 1.0
+VERSION_URL = "https://raw.github.com/beala/xkcd-password/feature/versioncheck/VERSION"
+HOME_URL = "https://github.com/beala/xkcd-password"
 
 class WordValidator(object):
     def __init__(self, flags):
@@ -201,15 +206,43 @@ def createParser():
             action='store_true',
             default=False,
             help="Enable the low memory algorithm.")
+    parser.add_argument('-vc',
+            action='store_true',
+            default=False,
+            help="Check if a new version is available.")
+    parser.add_argument('-v',
+            action='store_true',
+            default=False,
+            help="Report the version.")
     return parser
+
+def checkUpdate():
+    try:
+        update_server = urlopen(VERSION_URL)
+    except IOError as e:
+        err_msg = "There was a problem contacting the update server: %s\n" % e
+        sys.stderr.write(err_msg)
+        exit(1)
+    newest = update_server.read().strip()
+    update_server.close()
+    if str(VERSION) != newest:
+        print "You are out of date! The newest version is: %s" % newest
+        print "Please upgrade at: %s" % HOME_URL
+    else:
+        print "You are up to date!"
 
 if __name__ == "__main__":
     parser = createParser()
     flags = parser.parse_args()
-    pGen = PasswordGen(flags)
-    # Print the password without adding a \n or space.
-    sys.stdout.write(pGen.next())
-    # Make sure the password gets printed before info.
-    sys.stdout.flush()
-    if flags.i:
-        sys.stderr.write(pGen.getInfo())
+    if flags.vc:
+        checkUpdate()
+    elif flags.v:
+        print VERSION
+    else:
+        pGen = PasswordGen(flags)
+        # Print the password without adding a \n or space.
+        sys.stdout.write(pGen.next())
+        # Make sure the password gets printed before info.
+        sys.stdout.flush()
+        if flags.i:
+            sys.stderr.write(pGen.getInfo())
