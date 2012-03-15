@@ -9,7 +9,7 @@ import heapq
 
 # The dictionary bundled with the script. It must be in the same
 # dir as the script.
-DEFAULT_DICT= os.path.dirname(sys.argv[0]) + "/dict"
+DEFAULT_DICT = os.path.dirname(os.path.realpath(__file__)) + "/dict"
 # Uncomment to use the system dictionary as the default.
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
