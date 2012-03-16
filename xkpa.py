@@ -42,9 +42,9 @@ class Dictionary(object):
     def _openDict(self):
         try:
             dict_file = open(self.dict_path)
-        except IOError as (num, e):
+        except IOError as e:
             error_msg =  "There was a problem opening the dictionary file '%s': " % self.dict_path
-            error_msg += str(e) + "\n"
+            error_msg += str(e.args[1]) + "\n"
             sys.stderr.write(error_msg)
             exit(1)
         return dict_file
@@ -159,10 +159,13 @@ class PasswordGen(object):
         return self._delimiter.join(word_list) + ("" if self._noNewline else "\n")
 
     def getInfo(self):
-        entropy = math.log(len(self._randSource) ** self._wordCount, 2)
+        pos = len(self._randSource) ** self._wordCount
+        entropy = math.log(pos, 2)
+        yrs_to_crack = pos/(60.*60*24*365*1000000)
         info =  "\nInfo:\n"
-        info += "  Entropy: %f bits\n" % entropy
-        info += "  Entropy per word: %f bits\n" % (entropy / self._wordCount)
+        info += "  Entropy: %0.3f bits\n" % entropy
+        info += "  Entropy per word: %0.3f bits\n" % (entropy / self._wordCount)
+        info += "  At 1 million tries per second, it would take at most %0.3f years to crack." % yrs_to_crack
         return info
 
 def createParser():
