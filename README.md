@@ -48,19 +48,20 @@ http://xkcd.com/936/
 	./xkpa.py -ni | pbcopy
 	
 	Info:
-		Entropy: 61.291656 bits
-		Entropy per word: 15.322914 bits
-
-The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
+		Entropy: 61.292 bits
+		Entropy per word: 15.323 bits
+		At 1 million tries per second, it would take at most 89499.437 years to crack.
+		The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
 
 **Generate a password with info**
 
 	./xkpa.py -i
-	platter-presented-neighbor-vocational
-
+	pomegranate-outs-scapegoated-decomposed
+	
 	Info:
-		Entropy: 61.291656 bits
-		Entropy per word: 15.322914 bits
+		Entropy: 61.292 bits
+		Entropy per word: 15.323 bits
+		At 1 million tries per second, it would take at most 89499.437 years to crack.
 
 **Generate a password with 5 words separated by '.'**
  
