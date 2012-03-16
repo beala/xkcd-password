@@ -51,7 +51,8 @@ http://xkcd.com/936/
 		Entropy: 61.292 bits
 		Entropy per word: 15.323 bits
 		At 1 million tries per second, it would take at most 89499.437 years to crack.
-		The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
+
+The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
 
 **Generate a password with info**
 
