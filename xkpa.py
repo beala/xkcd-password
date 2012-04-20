@@ -165,7 +165,7 @@ class PasswordGen(object):
         info =  "\nInfo:\n"
         info += "  Entropy: %0.3f bits\n" % entropy
         info += "  Entropy per word: %0.3f bits\n" % (entropy / self._wordCount)
-        info += "  At 1 million tries per second, it would take at most %0.3f years to crack." % yrs_to_crack
+        info += "  At 1 million tries per second, it would take at most %0.3f years to crack.\n" % yrs_to_crack
         return info
 
 def createParser():
