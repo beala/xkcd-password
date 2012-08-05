@@ -80,7 +80,7 @@ The password will get copied to the clipboard, but the info message will not (th
 	owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
 
 ##Dictionary File##
-The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words.
+The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT for the associated licenses and credits.
  
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
