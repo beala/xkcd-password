@@ -23,17 +23,17 @@ usage: xkpa.py [-h] [-n] [-d DICT_PATH] [-x] [-i] [-s SEPARATOR] [-l LENGTH]
 
 Generate an xkcd style password.
 
-positial arguments:
+positional arguments:
   w             The number of words in the password. Defaults to 4.
 
-optial arguments:
+optional arguments:
   -h, --help    show this help message and exit
   -n            Disable printing a newline at the end of the password. Good
                 for piping to the clipboard.
-  -d DICT_PATH  The dictiary file. Defaults to /home/beala/pyth/xkcd-
+  -d DICT_PATH  The dictionary file. Defaults to /home/beala/python/xkcd-
                 pass/dict.
-  -x            Disable excluding special characters and punctuati.
-  -i            Enable showing password informati (entropy, etc).
+  -x            Disable excluding special characters and punctuation.
+  -i            Enable showing password information (entropy, etc).
   -s SEPARATOR  Delimit words with a given character/string.
   -l LENGTH     The maximum word length. Words must be at or below this
                 length.
@@ -51,7 +51,7 @@ http://xkcd.com/936/
 **Generate a password, copy to clipboard, and print info**
 
     ./xkpa.py -ni | pbcopy
-    
+
     Info:
         Entropy: 61.292 bits
         Entropy per word: 15.323 bits
@@ -63,14 +63,14 @@ The password will get copied to the clipboard, but the info message will not (th
 
     ./xkpa.py -i
     pomegranate-outs-scapegoated-decomposed
-    
+
     Info:
         Entropy: 61.292 bits
         Entropy per word: 15.323 bits
         At 1 million tries per second, it would take at most 89499.437 years to crack.
 
 **Generate a password with 5 words separated by '.'**
- 
+
     ./xkpa.py -s '.' 5
     belies.annoyingly.birthing.ventilate.icon
 
@@ -83,6 +83,17 @@ The password will get copied to the clipboard, but the info message will not (th
 
     ./xkpa.py -mxs '' 10
     owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
+
+**Generate multiple passwords**
+
+    ./xkpa.py -c 5
+    1. excite-incriminating-wronged-veto
+    2. ordinariest-reverberation-remain-subsidy
+    3. noisiness-faraway-countrysides-straightens
+    4. hardening-bribes-children-helpings
+    5. calmest-outs-audition-cleaned
+
+This is useful if someone is looking over your shoulder. Generate 20 passwords, and pick one. Each password is numbered, because your choice should be decided before the passwords are generated (if you generate 20 passwords, decided on a number between 1 and 20 beforehand). This prevents the urge to cherry pick passwords and decrease entropy.
 
 ##Dictionary File##
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT for the associated licenses and credits.
