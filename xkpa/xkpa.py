@@ -6,10 +6,11 @@ import argparse
 import os
 import sys
 import heapq
+from pkg_resources import resource_filename
 
 # The dictionary bundled with the script. It must be in the same
 # dir as the script.
-DEFAULT_DICT = os.path.dirname(os.path.realpath(__file__)) + "/dict"
+DEFAULT_DICT =  resource_filename(__name__, 'dict.txt')
 # Uncomment to use the system dictionary as the default.
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4

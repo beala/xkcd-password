@@ -1,1 +1,2 @@
-include *.txt
+include xkpa/dict.txt
+include README.md

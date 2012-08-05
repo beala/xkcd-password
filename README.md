@@ -3,20 +3,19 @@
 This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
 ##Install##
-You can clone the whole repo, but all that's needed is the `xkpa.py` and `dict` file. Put them in the same directory or change the default dictionary path (see instructions below).
-To run, you can make the script executable:
 
-    chmod +x xkpa.py
-    ./xkpa.py
+This package requires the `pip` Python package manager for installation. [pip installation instructions](http://www.pip-installer.org/en/latest/installing.html).
 
-Or you can run the script through the Python interpreter:
+Then:
 
-    python xkpa.py
+```
+pip install xkpa
+```
 
 ##Usage##
 
 ```
-% ./xkpa.py -h
+% xkpa -h
 usage: xkpa.py [-h] [-n] [-d DICT_PATH] [-x] [-i] [-s SEPARATOR] [-l LENGTH]
                [-c COUNT] [-m]
                [w]
@@ -46,11 +45,11 @@ http://xkcd.com/936/
 ##Examples##
 **Generate a password, and put it in the clipboard (OS X)**
 
-    ./xkpa.py -n | pbcopy
+    xkpa -n | pbcopy
 
 **Generate a password, copy to clipboard, and print info**
 
-    ./xkpa.py -ni | pbcopy
+    xkpa -ni | pbcopy
 
     Info:
         Entropy: 61.292 bits
@@ -61,7 +60,7 @@ The password will get copied to the clipboard, but the info message will not (th
 
 **Generate a password with info**
 
-    ./xkpa.py -i
+    xkpa -i
     pomegranate-outs-scapegoated-decomposed
 
     Info:
@@ -71,22 +70,22 @@ The password will get copied to the clipboard, but the info message will not (th
 
 **Generate a password with 5 words separated by '.'**
 
-    ./xkpa.py -s '.' 5
+    xkpa -s '.' 5
     belies.annoyingly.birthing.ventilate.icon
 
 **Generate a password with words no longer than 5 characters in length**
 
-    ./xkpa.py -l 5
+    xkpa -l 5
     cover-kings-yard-store
 
 **Generate a password on a low memory machine with 10 words, separated by nothing, and include words with special characters**
 
-    ./xkpa.py -mxs '' 10
+    xkpa -mxs '' 10
     owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
 
 **Generate multiple passwords**
 
-    ./xkpa.py -c 5
+    xkpa -c 5
     1. excite-incriminating-wronged-veto
     2. ordinariest-reverberation-remain-subsidy
     3. noisiness-faraway-countrysides-straightens
@@ -96,7 +95,7 @@ The password will get copied to the clipboard, but the info message will not (th
 This is useful if someone is looking over your shoulder. Generate 20 passwords, and pick one. Each password is numbered, because your choice should be decided before the passwords are generated (if you generate 20 passwords, decided on a number between 1 and 20 beforehand). This prevents the urge to cherry pick passwords and decrease entropy.
 
 ##Dictionary File##
-The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT for the associated licenses and credits.
+The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT.txt for the associated licenses and credits.
 
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
@@ -136,3 +135,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+The dictionary file (`dict.txt`) is distributed under the license of its original authors located in the README\_DICT.txt file.
