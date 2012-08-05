@@ -168,6 +168,18 @@ class PasswordGen(object):
         info += "  At 1 million tries per second, it would take at most %0.3f years to crack.\n" % yrs_to_crack
         return info
 
+class Enumerator(object):
+    def __init__(self, gen):
+        self.gen = gen
+        self.count = 0
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        self.count += 1
+        return "%d. %s" % (self.count, self.gen.next())
+
 def createParser():
     parser = argparse.ArgumentParser(
             description='Generate an xkcd style password.',
@@ -184,6 +196,7 @@ def createParser():
                   Good for piping to the clipboard.")
     parser.add_argument('-d',
             default=DEFAULT_DICT,
+            metavar="DICT_PATH",
             help="The dictionary file. Defaults to %s." % DEFAULT_DICT)
     parser.add_argument('-x',
             action='store_false',
@@ -195,11 +208,18 @@ def createParser():
             help="Enable showing password information (entropy, etc).")
     parser.add_argument('-s',
             default='-',
+            metavar="SEPARATOR",
             help="Delimit words with a given character/string.")
     parser.add_argument('-l',
             default=100,
             type=int,
+            metavar="LENGTH",
             help="The maximum word length. Words must be at or below this length.")
+    parser.add_argument('-c',
+            default=1,
+            type=int,
+            metavar="COUNT",
+            help="Number of passwords to generate. Defaults to 1.")
     parser.add_argument('-m',
             action='store_true',
             default=False,
@@ -209,9 +229,17 @@ def createParser():
 if __name__ == "__main__":
     parser = createParser()
     flags = parser.parse_args()
-    pGen = PasswordGen(flags)
+    pGen = iter(PasswordGen(flags))
     # Print the password without adding a \n or space.
-    sys.stdout.write(pGen.next())
+    password_count = int(flags.c)
+    if password_count == 1:
+        sys.stdout.write(pGen.next())
+    elif password_count > 1:
+        pGenEnumerate = iter(Enumerator(pGen))
+        for i in xrange(password_count):
+            sys.stdout.write(pGenEnumerate.next())
+    else:
+        sys.stderr.write("ERROR: Password count is less than 1.\n")
     # Make sure the password gets printed before info.
     sys.stdout.flush()
     if flags.i:
