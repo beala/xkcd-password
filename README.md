@@ -29,8 +29,7 @@ optional arguments:
   -h, --help    show this help message and exit
   -n            Disable printing a newline at the end of the password. Good
                 for piping to the clipboard.
-  -d DICT_PATH  The dictionary file. Defaults to /home/beala/python/xkcd-
-                pass/dict.
+  -d DICT_PATH  The dictionary file. Defaults to [PATH_TO_BUNDLED_DICT].
   -x            Disable excluding special characters and punctuation.
   -i            Enable showing password information (entropy, etc).
   -s SEPARATOR  Delimit words with a given character/string.
