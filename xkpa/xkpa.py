@@ -226,7 +226,7 @@ def createParser():
             help="Enable the low memory algorithm.")
     return parser
 
-if __name__ == "__main__":
+def main():
     parser = createParser()
     flags = parser.parse_args()
     pGen = iter(PasswordGen(flags))
@@ -244,3 +244,6 @@ if __name__ == "__main__":
     sys.stdout.flush()
     if flags.i:
         sys.stderr.write(pGen.getInfo())
+
+if __name__ == "__main__":
+    main()
