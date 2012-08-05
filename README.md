@@ -6,34 +6,39 @@ This python script implements the [xkcd password spec](http://xkcd.com/936/).
 You can clone the whole repo, but all that's needed is the `xkpa.py` and `dict` file. Put them in the same directory or change the default dictionary path (see instructions below).
 To run, you can make the script executable:
 
-	chmod +x xkpa.py
-	./xkpa.py
+    chmod +x xkpa.py
+    ./xkpa.py
 
 Or you can run the script through the Python interpreter:
 
-	python xkpa.py
+    python xkpa.py
 
 ##Usage##
 
 ```
 % ./xkpa.py -h
-usage: xkpa.py [-h] [-n] [-d D] [-x] [-i] [-s S] [-l L] [-m] [w]
+usage: xkpa.py [-h] [-n] [-d DICT_PATH] [-x] [-i] [-s SEPARATOR] [-l LENGTH]
+               [-c COUNT] [-m]
+               [w]
 
 Generate an xkcd style password.
 
-positional arguments:
-  w           The number of words in the password. Defaults to 4.
+positial arguments:
+  w             The number of words in the password. Defaults to 4.
 
-optional arguments:
-  -h, --help  show this help message and exit
-  -n          Disable printing a newline at the end of the password. Good for
-              piping to the clipboard.
-  -d D        The dictionary file. Defaults to ./dict.
-  -x          Disable excluding special characters and punctuation.
-  -i          Enable showing password information (entropy, etc).
-  -s S        Delimit words with a given character/string.
-  -l L        The maximum word length. Words must be at or below this length.
-  -m          Enable the low memory algorithm.
+optial arguments:
+  -h, --help    show this help message and exit
+  -n            Disable printing a newline at the end of the password. Good
+                for piping to the clipboard.
+  -d DICT_PATH  The dictiary file. Defaults to /home/beala/pyth/xkcd-
+                pass/dict.
+  -x            Disable excluding special characters and punctuati.
+  -i            Enable showing password informati (entropy, etc).
+  -s SEPARATOR  Delimit words with a given character/string.
+  -l LENGTH     The maximum word length. Words must be at or below this
+                length.
+  -c COUNT      Number of passwords to generate. Defaults to 1.
+  -m            Enable the low memory algorithm.
 
 http://xkcd.com/936/
 ```
@@ -41,47 +46,47 @@ http://xkcd.com/936/
 ##Examples##
 **Generate a password, and put it in the clipboard (OS X)**
 
-	./xkpa.py -n | pbcopy
+    ./xkpa.py -n | pbcopy
 
 **Generate a password, copy to clipboard, and print info**
 
-	./xkpa.py -ni | pbcopy
-	
-	Info:
-		Entropy: 61.292 bits
-		Entropy per word: 15.323 bits
-		At 1 million tries per second, it would take at most 89499.437 years to crack.
+    ./xkpa.py -ni | pbcopy
+    
+    Info:
+        Entropy: 61.292 bits
+        Entropy per word: 15.323 bits
+        At 1 million tries per second, it would take at most 89499.437 years to crack.
 
 The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
 
 **Generate a password with info**
 
-	./xkpa.py -i
-	pomegranate-outs-scapegoated-decomposed
-	
-	Info:
-		Entropy: 61.292 bits
-		Entropy per word: 15.323 bits
-		At 1 million tries per second, it would take at most 89499.437 years to crack.
+    ./xkpa.py -i
+    pomegranate-outs-scapegoated-decomposed
+    
+    Info:
+        Entropy: 61.292 bits
+        Entropy per word: 15.323 bits
+        At 1 million tries per second, it would take at most 89499.437 years to crack.
 
 **Generate a password with 5 words separated by '.'**
  
-	./xkpa.py -s '.' 5
-	belies.annoyingly.birthing.ventilate.icon
-	
+    ./xkpa.py -s '.' 5
+    belies.annoyingly.birthing.ventilate.icon
+
 **Generate a password with words no longer than 5 characters in length**
 
-	./xkpa.py -l 5
-	cover-kings-yard-store
+    ./xkpa.py -l 5
+    cover-kings-yard-store
 
 **Generate a password on a low memory machine with 10 words, separated by nothing, and include words with special characters**
 
-	./xkpa.py -mxs '' 10
-	owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
+    ./xkpa.py -mxs '' 10
+    owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
 
 ##Dictionary File##
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT for the associated licenses and credits.
- 
+
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
 ##Randomness##
@@ -90,8 +95,8 @@ This script uses the `random.SystemRandom()` method. This should provide cryptog
 ##Low Memory Algorithm##
 [This](http://blog.usrsb.in/blog/2012/01/11/picking-random-items-from-a-file/) is the low memory algorithm.
 
-	1. Read a word from the dictionary.
-	2. Give it a random value.
-	3. Insert the value-word pair (as a tuple) into the priority queue.
-	4. If the queue has more than n items, pop an item.
-	5. Repeat until every word has been read.
+    1. Read a word from the dictionary.
+    2. Give it a random value.
+    3. Insert the value-word pair (as a tuple) into the priority queue.
+    4. If the queue has more than n items, pop an item.
+    5. Repeat until every word has been read.
