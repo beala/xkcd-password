@@ -1,2 +1,3 @@
 include xkpa/dict.txt
 include README.md
+include CHANGES.txt

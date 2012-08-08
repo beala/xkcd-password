@@ -15,6 +15,7 @@ DEFAULT_DICT =  resource_filename(__name__, 'dict.txt')
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
+VERSION_NUMBER="0.1.1"
 
 class WordValidator(object):
     def __init__(self, flags):
@@ -88,68 +89,11 @@ class RandomDict(object):
     def __getattr__(self, attr):
         return getattr(self._dictObj, attr)
 
-class RandomDictLowMem(Dictionary):
-    def __init__(self, flags):
-        super(RandomDictLowMem, self).__init__(flags)
-        self._wordCount = flags.w
-        self._rng = random.SystemRandom()
-        self._dictLen = 0
-        self._dictList = []
-        self._loadDict(flags.d)
-
-    def _makeValWordTuple(self, word):
-        return (self._rng.random(), word)
-
-    def _loadDict(self, path):
-        word_q=[]
-        self._dictLen = 0
-        dict_file = self._openDict()
-        # Load the first n items into the word queue.
-        count = 0
-        while count < self._wordCount:
-            line = dict_file.next()
-            word = line.strip()
-            if self._wordValidator.isValidWord(word):
-                val_word = self._makeValWordTuple(word)
-                heapq.heappush(word_q, val_word)
-                count += 1
-                self._dictLen += 1
-
-        # Iterate through the entire dictionary, giving each word a
-        # random value, then pushing and popping from the queue. At
-        # the end, the queue will have n words with the highest random
-        # values.
-        for line in dict_file:
-            word = line.strip()
-            if self._wordValidator.isValidWord(word):
-                val_word = self._makeValWordTuple(word)
-                heapq.heappushpop(word_q, val_word)
-                self._dictLen += 1
-
-        dict_file.close()
-
-        # Put the queued items in a list, and strip them of their
-        # random values.
-        self._dictList = []
-        val_word_list = heapq.nlargest(self._wordCount, word_q)
-        for rand_val, word in val_word_list:
-            self._dictList.append(word)
-
-    def __iter__(self):
-        cur_word = 0
-        for word in self._dictList:
-            yield word
-        raise StopIteration
-
-    def __len__(self):
-        return self._dictLen
-
 class PasswordGen(object):
     def __init__(self, flags):
-        self._randSource = RandomDictLowMem(flags) if flags.m else RandomDict(flags)
+        self._randSource = RandomDict(flags)
         self._wordCount = flags.w
         self._delimiter = flags.s
-        self._noNewline = flags.n
 
     def __iter__(self):
         return self
@@ -157,7 +101,7 @@ class PasswordGen(object):
     def next(self):
         rand_source_iter = iter(self._randSource)
         word_list = [rand_source_iter.next() for i in range(self._wordCount)]
-        return self._delimiter.join(word_list) + ("" if self._noNewline else "\n")
+        return self._delimiter.join(word_list)
 
     def getInfo(self):
         pos = len(self._randSource) ** self._wordCount
@@ -221,15 +165,18 @@ def createParser():
             type=int,
             metavar="COUNT",
             help="Number of passwords to generate. Defaults to 1.")
-    parser.add_argument('-m',
+    parser.add_argument('-v',
             action='store_true',
             default=False,
-            help="Enable the low memory algorithm.")
+            help="Display version information.")
     return parser
 
 def main():
     parser = createParser()
     flags = parser.parse_args()
+    if flags.v:
+        print "Version: " + VERSION_NUMBER
+        return
     pGen = iter(PasswordGen(flags))
     # Print the password without adding a \n or space.
     password_count = int(flags.c)
@@ -238,9 +185,12 @@ def main():
     elif password_count > 1:
         pGenEnumerate = iter(Enumerator(pGen))
         for i in xrange(password_count):
-            sys.stdout.write(pGenEnumerate.next())
+            sys.stdout.write(pGenEnumerate.next() + ("\n" if i != flags.c - 1 else ""))
     else:
         sys.stderr.write("ERROR: Password count is less than 1.\n")
+    # Print newline if newline not disabled.
+    if not flags.n:
+        print ""
     # Make sure the password gets printed before info.
     sys.stdout.flush()
     if flags.i:

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
         name='xkpa',
-        version='0.1.0',
+        version='0.1.1',
         author='Alex Beal',
         author_email='alexlbeal@gmail.com',
         url='https://github.com/beala/xkcd-password',
