@@ -16,9 +16,9 @@ pip install xkpa
 
 ```
 % xkpa -h
-usage: xkpa.py [-h] [-n] [-d DICT_PATH] [-x] [-i] [-s SEPARATOR] [-l LENGTH]
-               [-c COUNT] [-m]
-               [w]
+usage: xkpa [-h] [-n] [-d DICT_PATH] [-x] [-i] [-s SEPARATOR] [-l LENGTH]
+            [-c COUNT] [-v]
+            [w]
 
 Generate an xkcd style password.
 
@@ -29,14 +29,15 @@ optional arguments:
   -h, --help    show this help message and exit
   -n            Disable printing a newline at the end of the password. Good
                 for piping to the clipboard.
-  -d DICT_PATH  The dictionary file. Defaults to [PATH_TO_BUNDLED_DICT].
+  -d DICT_PATH  The dictionary file. Defaults to /Library/Python/2.7/site-
+                packages/xkpa/dict.txt.
   -x            Disable excluding special characters and punctuation.
   -i            Enable showing password information (entropy, etc).
   -s SEPARATOR  Delimit words with a given character/string.
   -l LENGTH     The maximum word length. Words must be at or below this
                 length.
   -c COUNT      Number of passwords to generate. Defaults to 1.
-  -m            Enable the low memory algorithm.
+  -v            Display version information.
 
 http://xkcd.com/936/
 ```
