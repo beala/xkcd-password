@@ -77,11 +77,6 @@ The password will get copied to the clipboard, but the info message will not (th
     xkpa -l 5
     cover-kings-yard-store
 
-**Generate a password on a low memory machine with 10 words, separated by nothing, and include words with special characters**
-
-    xkpa -mxs '' 10
-    owedsuffersunhealthierlatitudecurd'sprotractormilestone'snutcrackerscertifypossession's
-
 **Generate multiple passwords**
 
     xkpa -c 5
