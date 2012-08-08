@@ -93,6 +93,12 @@ The password will get copied to the clipboard, but the info message will not (th
 
 This is useful if someone is looking over your shoulder. Generate 20 passwords, and pick one. Each password is numbered, because your choice should be decided before the passwords are generated (if you generate 20 passwords, decided on a number between 1 and 20 beforehand). This prevents the urge to cherry pick passwords and decrease entropy.
 
+## Cherry Picking Passwords
+
+If the generated passwords contain too many esoteric words, *resist the urge to cherry pick passwords with easier to remember words.* This will decrease the entropy of the password in an unpredictable way. The proper way to generate passwords with more familiar words is to use the `-l` option to limit the length of each word. Although this will also decrease entropy, it will be done in such a way that the `-i` flag will still be able to calculate the entropy of the password. When using the `-l` flag, be sure to use it in conjunction with `-i` to ensure the entropy of the password is suitable for your needs.
+
+So, use `xkpa -i -l NUM` until you've found a setting for the entropy you want. *Then generate one password and use it.* Don't keep generating a password until you've found one you "like."
+
 ##Dictionary File##
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT.txt for the associated licenses and credits.
 
@@ -100,15 +106,6 @@ Modify the `DEFAULT_DICT` variable at the top of the script to use a different d
 
 ##Randomness##
 This script uses the `random.SystemRandom()` method. This should provide cryptographically secure randomness.
-
-##Low Memory Algorithm##
-[This](http://blog.usrsb.in/blog/2012/01/11/picking-random-items-from-a-file/) is the low memory algorithm.
-
-    1. Read a word from the dictionary.
-    2. Give it a random value.
-    3. Insert the value-word pair (as a tuple) into the priority queue.
-    4. If the queue has more than n items, pop an item.
-    5. Repeat until every word has been read.
 
 ##License##
 The `xkpa.py` script is released under the MIT license:
