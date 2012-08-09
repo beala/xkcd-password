@@ -5,7 +5,6 @@ import math
 import argparse
 import os
 import sys
-import heapq
 from pkg_resources import resource_filename
 
 # The dictionary bundled with the script. It must be in the same
@@ -106,11 +105,11 @@ class PasswordGen(object):
     def getInfo(self):
         pos = len(self._randSource) ** self._wordCount
         entropy = math.log(pos, 2)
-        yrs_to_crack = pos/(60.*60*24*365*1000000)
+        yrs_to_crack = (pos/(60.*60*24*365*1000000))/2.
         info =  "\nInfo:\n"
         info += "  Entropy: %0.3f bits\n" % entropy
         info += "  Entropy per word: %0.3f bits\n" % (entropy / self._wordCount)
-        info += "  At 1 million tries per second, it would take at most %0.3f years to crack.\n" % yrs_to_crack
+        info += "  At 1 million tries per second, it would take on average %0.3f years to crack.\n" % yrs_to_crack
         return info
 
 class Enumerator(object):
