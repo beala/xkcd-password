@@ -123,6 +123,7 @@ class PasswordGen(object):
         info =  "\nInfo:\n"
         info += "  Entropy: %0.3f bits\n" % entropy
         info += "  Entropy per word: %0.3f bits\n" % entr_per_word
+        info += self.makeYrsToCrackMsg("1 thousand", 1e3)
         info += self.makeYrsToCrackMsg("70 thousand", 70e3)
         info += self.makeYrsToCrackMsg("70 million", 70e6)
         info += self.makeYrsToCrackMsg("300 billion", 300e9)

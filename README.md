@@ -99,13 +99,19 @@ If the generated passwords contain too many esoteric words, *resist the urge to 
 
 So, use `xkpa -i -l NUM` until you've found a setting with the desired entropy. *Then generate one password and use it.* Don't keep generating a password until you've found one you "like."
 
-Do not use the `-c` flag to generate several passwords at once, and cherry pick. This option is meant for use in public places where someone may be looking over your shoulder. The proper way to use this option is to think of a number between 1 and 100, and then generate 100 passwords with `xkpa -c 100`. Then choose the password which cooresponds to the number you've already picked. This way, you're not cherry picking, and if someone glances over your shoulder, they won't know which of the 100 passwords is your real password.
+Do not use the `-c` flag to generate several passwords at once, and cherry pick. This option is meant for use in public places where someone may be looking over your shoulder. The proper way to use this option is to think of a number between 1 and 100, and then generate 100 passwords with `xkpa -c 100`. Then choose the password which corresponds to the number you've already picked. This way, you're not cherry picking, and if someone glances over your shoulder, they won't know which of the 100 passwords is your real password.
 
 ##Config File
 
 There is no config file. Set default arguments by adding an alias to your `~/.bashrc`:
 
     alias pgen="xkpa -nil 5 5"
+
+##Entropy
+
+How much entropy you need really depends on what you're trying to protect against. State of the art password crackers can crack Windows password files at a rate of [300+ billion attempts per second](http://passwords12.at.ifi.uio.no/Jeremi_Gosney_Password_Cracking_HPC_Passwords12.pdf)[PDF] and this rate will only increase in the future. On the other hand, brute forcing a remote sever will take place at a much lower rate, and secure servers should have throttling mechanisms in place making this sort of attack obsolete. So, if you're worried that someone will try to reverse your hashed password, and you think your passwords are being hashed with a weak algorithm (e.g., MD5 or NTLM), then aim for high entropy. If you're generating a password for a remote server, and that server has throttling mechanisms in place, or your passwords are being hashed with a more secure algorithm (e.g., bcrypt), a lower entropy may be acceptable.
+
+The information on time-to-crack given by the `-i` flag was specifically chosen because these values are close to what state of the art cracking can achieve. Weak hashes, like NTLM and MD5 can be attempted at 348 billion and 180 billion tries per second, respectively. bcrypt, a more secure hash, slows this same attack down to 71 thousand attempts per second. Attacks against remote servers would probably happen somewhere within an order of magnitude of 1,000 attempts per second against a poorly secured server, and would be immediately throttled against a secure server.
 
 ##Dictionary File##
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT.txt for the associated licenses and credits.
