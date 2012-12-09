@@ -114,19 +114,17 @@ class PasswordGen(object):
 
     def next(self):
         rand_source_iter = iter(self._randSource)
-        word_list = [rand_source_iter.next() for i in range(self._wordCount)]
+        word_list = [rand_source_iter.next() for i in xrange(self._wordCount)]
         return self._delimiter.join(word_list)
 
     def getInfo(self):
         entropy, entr_per_word = self.calcEntropy()
-        yrs_to_crack_msg = "  At %s tries per second, it would take on average %0.3f years to crack.\n"
         info =  "\nInfo:\n"
         info += "  Entropy: %0.3f bits\n" % entropy
         info += "  Entropy per word: %0.3f bits\n" % entr_per_word
-        info += self.makeYrsToCrackMsg("1 thousand", 1e3)
-        info += self.makeYrsToCrackMsg("70 thousand", 70e3)
-        info += self.makeYrsToCrackMsg("70 million", 70e6)
-        info += self.makeYrsToCrackMsg("300 billion", 300e9)
+        info += "  Possible combinations given settings: %s\n" % self.readableNum(self.calcPos())
+        for triespersec in [1e3, 71e3, 77e6, 348e9]:
+            info += self.makeYrsToCrackMsg(triespersec)
         return info
 
     def calcEntropy(self):
@@ -134,14 +132,31 @@ class PasswordGen(object):
         return entropy, entropy/self._wordCount
 
     def calcYrsToCrack(self, triesPerSec):
-        return (self.calcPos()/(60.*60*24*365.25*triesPerSec))/2.
+        try:
+            return (self.calcPos()/(60*60*24*365.25*triesPerSec))/2
+        except OverflowError:
+            # If float calculation overflows, estimate using long.
+            return (self.calcPos()/(60*60*24*365*int(triesPerSec)))/2
 
-    def makeYrsToCrackMsg(self, english, triesPerSec):
-        return "  Average time to crack at %s tries per second: %0.6f years\n" % (english, self.calcYrsToCrack(triesPerSec))
-
+    def makeYrsToCrackMsg(self, triesPerSec):
+        try:
+            return "  Average time to crack at %s tries per second: %s years\n" % (self.readableNum(triesPerSec), self.readableNum(self.calcYrsToCrack(triesPerSec)))
+        except TypeError:
+            # If float conversion overflows, use long.
+            return "  Average time to crack at %s tries per second: %s years\n" % (self.readableNum(triesPerSec), self.calcYrsToCrack(triesPerSec))
 
     def calcPos(self):
         return len(self._randSource) ** self._wordCount
+
+    def readableNum(self, num, postfix=""):
+        num_words = { 1000000000000: 'trillion ',
+                      1000000000   : 'billion ',
+                      1000000      : 'million ',
+                      1000         : 'thousand ', }
+        for div, word in num_words.items():
+            if num/div >= 1:
+                return self.readableNum(num/div, word + postfix)
+        return "{:,.1f} {:s}".format(num, postfix).rstrip()
 
 
 class Enumerator(object):
@@ -224,6 +239,13 @@ def main():
     parser = createParser()
     flags = parser.parse_args()
 
+    if flags.l < 1:
+        sys.stderr.write("ERROR: Maxmimum word length is less than 1.\n")
+        return
+    if flags.c < 1:
+        sys.stderr.write("ERROR: Password count is less than 1.\n")
+        return
+
     if flags.v:
         print "Version: " + VERSION_NUMBER
         return
@@ -237,8 +259,6 @@ def main():
         pGenEnumerate = iter(Enumerator(pGen))
         for i in xrange(password_count):
             sys.stdout.write(pGenEnumerate.next() + ("\n" if i != flags.c - 1 else ""))
-    else:
-        sys.stderr.write("ERROR: Password count is less than 1.")
     # Print newline if newline not disabled.
     if not flags.n:
         print ""
