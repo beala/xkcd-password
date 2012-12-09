@@ -1,3 +1,8 @@
+v 0.1.2 (12/8/2012)
+- Adds more information in the "time to crack" info message. State of the art
+  hash crackers can try 300+ billion hashes per sec. Message updated to reflect
+  this.
+
 v 0.1.1 (8/7/2012)
 - Removes low mem algorithm. Added complexity without really being useful.
 - Adds -v for version information.
