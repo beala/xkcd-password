@@ -14,7 +14,7 @@ DEFAULT_DICT =  resource_filename(__name__, 'dict.txt')
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
-VERSION_NUMBER="0.1.1"
+VERSION_NUMBER="0.1.2"
 
 class WordValidator(object):
     """Validates words from the dictionary file, when the file is loaded
@@ -37,7 +37,7 @@ class WordValidator(object):
     def _hasBadChar(self, word):
         """Return true if word has a 'bad' char.
         """
-        for char in word:
+        for char in reversed(word):
             if char in self._badChars:
                 return True
 
@@ -118,14 +118,30 @@ class PasswordGen(object):
         return self._delimiter.join(word_list)
 
     def getInfo(self):
-        pos = len(self._randSource) ** self._wordCount
-        entropy = math.log(pos, 2)
-        yrs_to_crack = (pos/(60.*60*24*365*1000000))/2.
+        entropy, entr_per_word = self.calcEntropy()
+        yrs_to_crack_msg = "  At %s tries per second, it would take on average %0.3f years to crack.\n"
         info =  "\nInfo:\n"
         info += "  Entropy: %0.3f bits\n" % entropy
-        info += "  Entropy per word: %0.3f bits\n" % (entropy / self._wordCount)
-        info += "  At 1 million tries per second, it would take on average %0.3f years to crack.\n" % yrs_to_crack
+        info += "  Entropy per word: %0.3f bits\n" % entr_per_word
+        info += self.makeYrsToCrackMsg("70 thousand", 70e3)
+        info += self.makeYrsToCrackMsg("70 million", 70e6)
+        info += self.makeYrsToCrackMsg("300 billion", 300e9)
         return info
+
+    def calcEntropy(self):
+        entropy = math.log(self.calcPos(), 2)
+        return entropy, entropy/self._wordCount
+
+    def calcYrsToCrack(self, triesPerSec):
+        return (self.calcPos()/(60.*60*24*365.25*triesPerSec))/2.
+
+    def makeYrsToCrackMsg(self, english, triesPerSec):
+        return "  Average time to crack at %s tries per second: %0.6f years\n" % (english, self.calcYrsToCrack(triesPerSec))
+
+
+    def calcPos(self):
+        return len(self._randSource) ** self._wordCount
+
 
 class Enumerator(object):
     """Accepts an iterator and prepends 1., 2., 3., etc to the beginning
@@ -142,50 +158,22 @@ class Enumerator(object):
         self.count += 1
         return "%d. %s" % (self.count, self.gen.next())
 
-class ArgDict(object):
-    """Aggregates several Namespace objects, and ducktypes as a Namespace
-       object. Looking up an attr looks up the attr in all the Namespaces and
-       returns the first which isn't the default value. Otherwise, it returns
-       the default.
-    """
-    def __init__(self, default_dict, *namespaces):
-        """default_dict: Dict mapping attr names to default values.
-           namespaces: List of Namespace objects from highest precedence
-            to lowest.
-        """
-        self.default_dict = default_dict
-        self.namespaces = namespaces
-
-    def __getattribute__(self, name):
-        """Lookup 'name' in each namespace object, and return the first value
-           that's not the default. Otherwise, return the default.
-        """
-        for namespace in object.__getattribute__(self, "namespaces"):
-            if (
-                    hasattr(namespace,name) and
-                    getattr(namespace, name) !=
-                        object.__getattribute__(self,"default_dict")[name]):
-                return getattr(namespace, name)
-        return object.__getattribute__(self,"default_dict")[name]
-
-# Default values for command line flags.
-flag_defaults = {
-    'w': WORDS,
-    'n':False,
-    'd':DEFAULT_DICT,
-    'x':True,
-    'i':False,
-    's':'-',
-    'l':100,
-    'c':1,
-    'ignore':False,
-    'v':False,
-    'config':"~/.xkpa"
-    }
 
 def createParser():
     """Create the parser for the command line flagsi
     """
+    # Default values for command line flags.
+    flag_defaults = {
+        'w': WORDS,
+        'n':False,
+        'd':DEFAULT_DICT,
+        'x':True,
+        'i':False,
+        's':'-',
+        'l':100,
+        'c':1,
+        'v':False,
+        }
     parser = argparse.ArgumentParser(
             description='Generate an xkcd style password.',
             epilog='http://xkcd.com/936/')
@@ -225,45 +213,15 @@ def createParser():
             type=int,
             metavar="COUNT",
             help="Number of passwords to generate. Defaults to 1.")
-    parser.add_argument('--config',
-            metavar="CONFIG_PATH",
-            default=flag_defaults['config'],
-            help="Path to config file. Defaults to %s." % flag_defaults['config'])
-    parser.add_argument('--ignore',
-            action='store_true',
-            default=flag_defaults['ignore'],
-            help="Ignore the options in the config file.")
     parser.add_argument('-v',
             action='store_true',
             default=flag_defaults['v'],
             help="Display version information.")
     return parser
 
-def strip_quotes(to_strip):
-    """If 'to_strip' is surrounded by single or double quotes, return
-       the same string with the quotes stripped off.
-    """
-    if len(to_strip) < 2:
-        return to_strip
-    elif (
-            to_strip[0] == to_strip[-1] == "'" or
-            to_strip[0] == to_strip[-1] == '"'):
-        return to_strip[1:len(to_strip)-1]
-    else:
-        return to_strip
-
-
 def main():
     parser = createParser()
     flags = parser.parse_args()
-    if not flags.ignore:
-        config_path = os.path.expanduser("~/.xkpa")
-        if os.path.isfile(config_path):
-            with open(config_path) as config_file:
-                options_list = config_file.read().strip().split()
-            options_list = map(strip_quotes, options_list)
-            config_flags = parser.parse_args(options_list)
-            flags = ArgDict(flag_defaults, flags, config_flags)
 
     if flags.v:
         print "Version: " + VERSION_NUMBER
@@ -279,7 +237,7 @@ def main():
         for i in xrange(password_count):
             sys.stdout.write(pGenEnumerate.next() + ("\n" if i != flags.c - 1 else ""))
     else:
-        sys.stderr.write("ERROR: Password count is less than 1.\n")
+        sys.stderr.write("ERROR: Password count is less than 1.")
     # Print newline if newline not disabled.
     if not flags.n:
         print ""

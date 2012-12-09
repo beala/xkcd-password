@@ -17,7 +17,7 @@ pip install xkpa
 ```
 % xkpa -h
 usage: xkpa.py [-h] [-n] [-d DICT_PATH] [-x] [-i] [-s SEPARATOR] [-l LENGTH]
-               [-c COUNT] [-m]
+               [-c COUNT] [-v]
                [w]
 
 Generate an xkcd style password.
@@ -29,14 +29,14 @@ optional arguments:
   -h, --help    show this help message and exit
   -n            Disable printing a newline at the end of the password. Good
                 for piping to the clipboard.
-  -d DICT_PATH  The dictionary file. Defaults to [PATH_TO_BUNDLED_DICT].
+  -d DICT_PATH  The dictionary file. Defaults to ./dict.txt.
   -x            Disable excluding special characters and punctuation.
   -i            Enable showing password information (entropy, etc).
   -s SEPARATOR  Delimit words with a given character/string.
   -l LENGTH     The maximum word length. Words must be at or below this
                 length.
   -c COUNT      Number of passwords to generate. Defaults to 1.
-  -m            Enable the low memory algorithm.
+  -v            Display version information.
 
 http://xkcd.com/936/
 ```
@@ -87,17 +87,25 @@ The password will get copied to the clipboard, but the info message will not (th
     xkpa -c 5
     1. excite-incriminating-wronged-veto
     2. ordinariest-reverberation-remain-subsidy
-    3. noisiness-faraway-countrysides-straightens
+    3. noisiness-faraway-country-sides-straightens
     4. hardening-bribes-children-helpings
-    5. calmest-outs-audition-cleaned
+    5. calmes-touts-audition-cleaned
 
-This is useful if someone is looking over your shoulder. Generate 20 passwords, and pick one. Each password is numbered, because your choice should be decided before the passwords are generated (if you generate 20 passwords, decided on a number between 1 and 20 beforehand). This prevents the urge to cherry pick passwords and decrease entropy.
+This is useful if someone is looking over your shoulder. By generating multiple passwords, someone looking over your shoulder will not know which is your real password. Each password is numbered, because your choice should be decided *before the passwords are generated* (if you generate 20 passwords, decided on a number between 1 and 20 beforehand). This prevents the urge to cherry pick passwords and decrease entropy.
 
 ## Cherry Picking Passwords
 
 If the generated passwords contain too many esoteric words, *resist the urge to cherry pick passwords with easier to remember words.* This will decrease the entropy of the password in an unpredictable way. The proper way to generate passwords with more familiar words is to use the `-l` option to limit the length of each word. Although this will also decrease entropy, it will be done in such a way that the `-i` flag will still be able to calculate the entropy of the password. When using the `-l` flag, be sure to use it in conjunction with `-i` to ensure the entropy of the password is suitable for your needs.
 
-So, use `xkpa -i -l NUM` until you've found a setting for the entropy you want. *Then generate one password and use it.* Don't keep generating a password until you've found one you "like."
+So, use `xkpa -i -l NUM` until you've found a setting with the desired entropy. *Then generate one password and use it.* Don't keep generating a password until you've found one you "like."
+
+Do not use the `-c` flag to generate several passwords at once, and cherry pick. This option is meant for use in public places where someone may be looking over your shoulder. The proper way to use this option is to think of a number between 1 and 100, and then generate 100 passwords with `xkpa -c 100`. Then choose the password which cooresponds to the number you've already picked. This way, you're not cherry picking, and if someone glances over your shoulder, they won't know which of the 100 passwords is your real password.
+
+##Config File
+
+There is no config file. Set default arguments by adding an alias to your `~/.bashrc`:
+
+    alias pgen="xkpa -nil 5 5"
 
 ##Dictionary File##
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT.txt for the associated licenses and credits.
