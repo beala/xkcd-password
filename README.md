@@ -54,9 +54,9 @@ http://xkcd.com/936/
       Entropy per word: 15.323 bits
       Possible combinations given settings: 2.0 million trillion
       Average time to crack at 1.0 thousand tries per second: 44.7 million years
-      Average time to crack at 71.0 thousand tries per second: 629.8 thousand years
-      Average time to crack at 77.0 million tries per second: 580.8 years
-      Average time to crack at 348.0 billion tries per second: 0.1 years
+      Average time to crack at 70.0 thousand tries per second: 629.8 thousand years
+      Average time to crack at 75.0 million tries per second: 580.8 years
+      Average time to crack at 350.0 billion tries per second: 0.1 years
 
 The password will get copied to the clipboard, but the info message will not (the info message is printed to stderr).
 
@@ -70,9 +70,9 @@ The password will get copied to the clipboard, but the info message will not (th
       Entropy per word: 15.323 bits
       Possible combinations given settings: 2.0 million trillion
       Average time to crack at 1.0 thousand tries per second: 44.7 million years
-      Average time to crack at 71.0 thousand tries per second: 629.8 thousand years
-      Average time to crack at 77.0 million tries per second: 580.8 years
-      Average time to crack at 348.0 billion tries per second: 0.1 years
+      Average time to crack at 70.0 thousand tries per second: 629.8 thousand years
+      Average time to crack at 75.0 million tries per second: 580.8 years
+      Average time to crack at 350.0 billion tries per second: 0.1 years
 
 **Generate a password with 5 words separated by '.'**
 
@@ -107,7 +107,7 @@ Do not use the `-c` flag to generate several passwords at once, and cherry pick.
 
 How much entropy you need really depends on what you're trying to protect against. State of the art password crackers can crack Windows password files at a rate of [300+ billion attempts per second](http://passwords12.at.ifi.uio.no/Jeremi_Gosney_Password_Cracking_HPC_Passwords12.pdf) [PDF] and this rate will only increase in the future. On the other hand, brute forcing a remote sever will take place at a much lower rate, and secure servers should have throttling mechanisms in place making this sort of attack obsolete. So, if you're worried that someone will try to reverse your hashed password, and you think your passwords are being hashed with a weak algorithm (e.g., MD5 or NTLM), then aim for high entropy. If you're generating a password for a remote server, and that server has throttling mechanisms in place, or your passwords are being hashed with a more secure algorithm (e.g., bcrypt), a lower entropy may be acceptable.
 
-The information on time-to-crack given by the `-i` flag was specifically chosen because these values represent the current state of the art. Weak hashes, like NTLM and MD5 can be attempted at 348 billion and 180 billion tries per second, respectively. bcrypt, a more secure hash, slows this same attack down to 71 thousand attempts per second (77 million/sec for md5crypt). Attacks against remote servers probably happen somewhere within an order of magnitude of 1,000 attempts per second against a poorly secured server, and would be immediately throttled against a secure server. [CloudCracker](https://www.cloudcracker.com/) boasts a rate of 300,000,000 words in 20 minute, or 41,000 words per second.
+The information on time-to-crack given by the `-i` flag was specifically chosen because these values represent the current state of the art. Weak hashes, like NTLM and MD5 can be attempted at 350 billion and 180 billion tries per second, respectively. bcrypt, a more secure hash, slows this same attack down to 70 thousand attempts per second (75 million/sec for md5crypt). Attacks against remote servers probably happen somewhere within an order of magnitude of 1,000 attempts per second against a poorly secured server, and would be immediately throttled against a secure server. [CloudCracker](https://www.cloudcracker.com/) boasts a rate of 300,000,000 words in 20 minute, or 41,000 words per second.
 
 ##Config File
 
@@ -121,7 +121,7 @@ The dictionary file bundled with the script is from the `wamerican-small` packag
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
 ##Randomness##
-This script uses the `random.SystemRandom()` method. This should provide cryptographically secure randomness.
+[PyCrypto's](https://www.dlitz.net/software/pycrypto/) `Crypto.Random.random` class. This should provide cryptographically secure randomness.
 
 ##License##
 The `xkpa.py` script is released under the MIT license:

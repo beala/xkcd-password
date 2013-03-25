@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
         name='xkpa',
-        version='0.1.2',
+        version='0.1.3',
         author='Alex Beal',
         author_email='alexlbeal@gmail.com',
         url='https://github.com/beala/xkcd-password',
@@ -19,6 +19,7 @@ setup(
             'console_scripts': [
                 'xkpa = xkpa.xkpa:main']
         },
+        install_requires=['pycrypto>=2.6'],
         classifiers=[
             "Topic :: Security",
             "Environment :: Console",

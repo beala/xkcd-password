@@ -1,6 +1,6 @@
 #!/usr/bin/python -O
 
-import random
+from Crypto.Random import random
 import math
 import argparse
 import os
@@ -14,7 +14,7 @@ DEFAULT_DICT =  resource_filename(__name__, 'dict.txt')
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
-VERSION_NUMBER="0.1.2"
+VERSION_NUMBER="0.1.3"
 
 class WordValidator(object):
     """Validates words from the dictionary file, when the file is loaded
@@ -41,53 +41,35 @@ class WordValidator(object):
             if char in self._badChars:
                 return True
 
-class Dictionary(object):
-    def __init__(self, flags):
-        self._dictLen = 0
-        self._wordValidator = WordValidator(flags)
-        self.dict_path = flags.d
-
-    def _openDict(self):
-        try:
-            dict_file = open(self.dict_path)
-        except IOError as e:
-            error_msg =  "There was a problem opening the dictionary file '%s': " % self.dict_path
-            error_msg += str(e.args[1]) + "\n"
-            sys.stderr.write(error_msg)
-            exit(1)
-        return dict_file
-
-class DictionaryList(Dictionary):
+class WordList(object):
     """List-like object that returns words from a dictionary file.
     """
     def __init__(self, flags):
-        super(DictionaryList, self).__init__(flags)
+        self._wordValidator = WordValidator(flags)
         self._loadDict(flags.d)
 
     def __getitem__(self, key):
         return self._dictList[key]
 
     def __len__(self):
-        return self._dictLen
+        return len(self._dictList)
 
     def _loadDict(self, path):
         """Load every word from dict_file that passes the isValidWord test.
         """
         self._dictList = []
-        dict_file = self._openDict()
-        for line in dict_file:
-            word = line.strip()
-            if self._wordValidator.isValidWord(word):
-                self._dictList.append(word)
-        self._dictLen = len(self._dictList)
-        dict_file.close()
+        with open(path) as dict_file:
+            for line in dict_file:
+                word = line.strip()
+                if self._wordValidator.isValidWord(word):
+                    self._dictList.append(word)
 
-class RandomDict(object):
+class RandomWord(object):
     """Iterator that returns on random word per iteration.
     """
     def __init__(self, flags):
-        self._dictObj = DictionaryList(flags)
-        self._rng = random.SystemRandom()
+        self._dictObj = WordList(flags)
+        self._rng = random
 
     def __iter__(self):
         return self
@@ -96,16 +78,13 @@ class RandomDict(object):
         return len(self._dictObj)
 
     def next(self):
-        return self._dictObj[self._rng.randint(0, len(self) - 1)]
-
-    def __getattr__(self, attr):
-        return getattr(self._dictObj, attr)
+        return self._rng.choice(self._dictObj)
 
 class PasswordGen(object):
     """Iterator that returns one password per iteration.
     """
     def __init__(self, flags):
-        self._randSource = RandomDict(flags)
+        self._randSource = RandomWord(flags)
         self._wordCount = flags.w
         self._delimiter = flags.s
 
@@ -123,7 +102,7 @@ class PasswordGen(object):
         info += "  Entropy: %0.3f bits\n" % entropy
         info += "  Entropy per word: %0.3f bits\n" % entr_per_word
         info += "  Possible combinations given settings: %s\n" % self.readableNum(self.calcPos())
-        for triespersec in [1e3, 71e3, 77e6, 348e9]:
+        for triespersec in [1e3, 70e3, 75e6, 350e9]:
             info += self.makeYrsToCrackMsg(triespersec)
         return info
 
