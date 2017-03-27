@@ -1,11 +1,16 @@
 #!/usr/bin/python -O
 
+from __future__ import print_function
 from Crypto.Random import random
 import math
 import argparse
 import os
 import sys
 from pkg_resources import resource_filename
+
+PY2 = sys.version_info < (3,)
+if PY2:
+    range = xrange
 
 # The dictionary bundled with the script. It must be in the same
 # dir as the script.
@@ -80,6 +85,8 @@ class RandomWord(object):
     def next(self):
         return self._rng.choice(self._dictObj)
 
+    __next__ = next
+
 class PasswordGen(object):
     """Iterator that returns one password per iteration.
     """
@@ -93,8 +100,10 @@ class PasswordGen(object):
 
     def next(self):
         rand_source_iter = iter(self._randSource)
-        word_list = [rand_source_iter.next() for i in xrange(self._wordCount)]
+        word_list = [rand_source_iter.next() for i in range(self._wordCount)]
         return self._delimiter.join(word_list)
+
+    __next__ = next
 
     def getInfo(self):
         entropy, entr_per_word = self.calcEntropy()
@@ -226,7 +235,7 @@ def main():
         return
 
     if flags.v:
-        print "Version: " + VERSION_NUMBER
+        print("Version: " + VERSION_NUMBER)
         return
 
     pGen = iter(PasswordGen(flags))
@@ -236,11 +245,11 @@ def main():
         sys.stdout.write(pGen.next())
     elif password_count > 1:
         pGenEnumerate = iter(Enumerator(pGen))
-        for i in xrange(password_count):
+        for i in range(password_count):
             sys.stdout.write(pGenEnumerate.next() + ("\n" if i != flags.c - 1 else ""))
     # Print newline if newline not disabled.
     if not flags.n:
-        print ""
+        print("")
 
     # Make sure the password gets printed before info.
     sys.stdout.flush()
