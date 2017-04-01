@@ -121,7 +121,7 @@ The dictionary file bundled with the script is from the `wamerican-small` packag
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
 ##Randomness##
-[PyCrypto's](https://www.dlitz.net/software/pycrypto/) `Crypto.Random.random` class. This should provide cryptographically secure randomness.
+This uses Python's [`random.SystemRandom`](https://docs.python.org/3/library/random.html#random.SystemRandom) as a source of entropy. This provides cryptographically secure randomness.
 
 ##License##
 The `xkpa.py` script is released under the MIT license:

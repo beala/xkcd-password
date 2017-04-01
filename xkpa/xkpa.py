@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
-
+ 
 from __future__ import print_function
-from Crypto.Random import random
+import random
 import math
 import argparse
 import os
@@ -19,7 +19,7 @@ DEFAULT_DICT =  resource_filename(__name__, 'dict.txt')
 #DEFAULT_DICT="/usr/share/dict/words"
 WORDS = 4
 BAD_CH_LIST = ['\'']
-VERSION_NUMBER="0.1.3"
+VERSION_NUMBER="0.1.4"
 
 class WordValidator(object):
     """Validates words from the dictionary file, when the file is loaded
@@ -74,7 +74,7 @@ class RandomWord(object):
     """
     def __init__(self, flags):
         self._dictObj = WordList(flags)
-        self._rng = random
+        self._rng = random.SystemRandom()
 
     def __iter__(self):
         return self

@@ -1,3 +1,6 @@
+v 0.1.4 (3/1/2017)
+- Python 3 compatibility (Credit: Jason Alonso https://github.com/jbalonso)
+
 v 0.1.3 (3/24/2013)
 - Switched to PyCrypto's PRNG.
 - Cleaned up info messages (chose random numbers for tries/sec).
