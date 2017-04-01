@@ -1,8 +1,8 @@
-##Introduction##
+## Introduction
 
 This python script implements the [xkcd password spec](http://xkcd.com/936/).
 
-##Install##
+## Install
 
 This package requires the `pip` Python package manager for installation. [pip installation instructions](http://www.pip-installer.org/en/latest/installing.html).
 
@@ -12,7 +12,7 @@ Then:
 pip install xkpa
 ```
 
-##Usage##
+## Usage
 
 ```
 % xkpa -h
@@ -41,7 +41,7 @@ optional arguments:
 http://xkcd.com/936/
 ```
 
-##Examples##
+## Examples
 **Generate a password, and put it in the clipboard (OS X)**
 
     xkpa -n | pbcopy
@@ -103,27 +103,27 @@ So, use `xkpa -i -l NUM` until you've found a setting with the desired entropy. 
 
 Do not use the `-c` flag to generate several passwords at once, and cherry pick. This option is meant for use in public places where someone may be looking over your shoulder. The proper way to use this option is to think of a number between 1 and 100, and then generate 100 passwords with `xkpa -c 100`. Then choose the password which corresponds to the number you've already picked. This way, you're not cherry picking, and if someone glances over your shoulder, they won't know which of the 100 passwords is your real password.
 
-##Entropy
+## Entropy
 
 How much entropy you need really depends on what you're trying to protect against. State of the art password crackers can crack Windows password files at a rate of [300+ billion attempts per second](http://passwords12.at.ifi.uio.no/Jeremi_Gosney_Password_Cracking_HPC_Passwords12.pdf) [PDF] and this rate will only increase in the future. On the other hand, brute forcing a remote sever will take place at a much lower rate, and secure servers should have throttling mechanisms in place making this sort of attack obsolete. So, if you're worried that someone will try to reverse your hashed password, and you think your passwords are being hashed with a weak algorithm (e.g., MD5 or NTLM), then aim for high entropy. If you're generating a password for a remote server, and that server has throttling mechanisms in place, or your passwords are being hashed with a more secure algorithm (e.g., bcrypt), a lower entropy may be acceptable.
 
 The information on time-to-crack given by the `-i` flag was specifically chosen because these values represent the current state of the art. Weak hashes, like NTLM and MD5 can be attempted at 350 billion and 180 billion tries per second, respectively. bcrypt, a more secure hash, slows this same attack down to 70 thousand attempts per second (75 million/sec for md5crypt). Attacks against remote servers probably happen somewhere within an order of magnitude of 1,000 attempts per second against a poorly secured server, and would be immediately throttled against a secure server. [CloudCracker](https://www.cloudcracker.com/) boasts a rate of 300,000,000 words in 20 minute, or 41,000 words per second.
 
-##Config File
+## Config File
 
 There is no config file. Set default arguments by adding an alias to your `~/.bashrc`:
 
     alias pgen="xkpa -nil 5 5"
 
-##Dictionary File##
+## Dictionary File
 The dictionary file bundled with the script is from the `wamerican-small` package off Ubuntu. It strikes a nice balance between entropy and not having too many esoteric words. See README\_DICT.txt for the associated licenses and credits.
 
 Modify the `DEFAULT_DICT` variable at the top of the script to use a different default.
 
-##Randomness##
+## Randomness
 This uses Python's [`random.SystemRandom`](https://docs.python.org/3/library/random.html#random.SystemRandom) as a source of entropy. This provides cryptographically secure randomness.
 
-##License##
+## License
 The `xkpa.py` script is released under the MIT license:
 
 ```
